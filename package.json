@@ -1,0 +1,23 @@
+{
+  "name": "codefortomorrow",
+  "version": "1.0.0",
+  "description": "Chat",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heyAtul/CodeForTomorrow.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/heyAtul/CodeForTomorrow/issues"
+  },
+  "homepage": "https://github.com/heyAtul/CodeForTomorrow#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
