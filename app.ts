@@ -1,11 +1,12 @@
 import express from "express";
-let PORT = 8000
+import 'dotenv/config'
+let PORT = process.env.PORT
 let app = express()
 
 app.use("/", (req, res)=> {
     res.send("Chat APP")
 })
 
-app.listen(PORT, (port)=>{
+app.listen(PORT, ()=>{
     console.log("Port start - " + PORT)
 })
