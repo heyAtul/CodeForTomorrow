@@ -17,8 +17,8 @@ export let createChat = async (req: Request, res: Response) => {
 
     chat = await Chat.create({ chatId })
     await ChatMember.bulkCreate([
-        { chatId: chat.id, userId: userA },
-        { chatId: chat.id, userId: userB }
+        { chatId: chat.chatId, userId: userA },
+        { chatId: chat.chatId, userId: userB }
     ], { ignoreDuplicates: true })
     res.status(201).json({ chatId: chat.chatId })
 }
