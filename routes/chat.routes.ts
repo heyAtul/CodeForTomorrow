@@ -2,7 +2,7 @@ import { Router } from "express";
 
 let chatRoute = Router()
 
-chatRoute.post("/", (req, res)=> {
+chatRoute.post("/create", (req, res)=> {
     res.send("Chat created")
 })
 

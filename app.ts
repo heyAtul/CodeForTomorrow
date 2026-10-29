@@ -1,14 +1,22 @@
 import express from "express";
+import chatRoute from "./routes/chat.routes.ts";
+import userRoute from "./routes/user.routes.ts";
 import 'dotenv/config'
-import chatRoute from "./routes/chatRoute.routes.ts";
+import db from "./db.ts";
+
+
 let PORT = process.env.PORT
 let app = express()
 
-app.get("/", (req, res)=> {
+app.get("/", (req, res) => {
     res.send("Chat APP")
 })
-app.use("/chat/create", chatRoute);
+app.use("/chat", chatRoute);
+app.use("/user", userRoute)
 
-app.listen(PORT, ()=>{
+app.listen(PORT, async () => {
+    await db.authenticate()
+    await db.sync()
+    console.log("MySQL connected")
     console.log("Port start - " + PORT)
 })
