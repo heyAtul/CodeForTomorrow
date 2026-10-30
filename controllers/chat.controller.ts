@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import Chat from "../model/chat.model.ts";
 import ChatMember from "../model/chatMember.model.ts";
 
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import firestore from "../firebase.ts";
 
 
@@ -47,4 +47,48 @@ export let sendMessage = async (req: Request<{ chatId: string }>, res: Response)
     })
 
     res.status(201).json({ messageId: message.id })
+}
+
+export let getMessages = async (req: Request<{ chatId: string }>, res: Response) => {
+    let { chatId } = req.params
+    let count = Number(req.query.limit ?? 50)
+    if (count < 1) {
+        res.status(400).json({ message: "limit must be a positive number" })
+        return
+    }
+
+    let chat = await Chat.findOne({ where: { chatId } })
+    if (!chat) {
+        res.status(404).json({ message: "chat not found" })
+        return
+    }
+
+    // indexing issue, created manually
+    // let snapshot = await getDocs(query(
+    //     collection(firestore, "messages"),
+    //     where("chatId", "==", chatId),
+    //     orderBy("createdAt", "desc"),
+    //     limit(count)
+    // ))
+
+    // let messages = snapshot.docs.map(doc => ({
+    //     id: doc.id,
+    //     ...doc.data(),
+    //     createdAt: doc.data().createdAt.toDate()
+    // })).reverse()
+
+
+    // index building taking time
+    let snapshot = await getDocs(query(
+        collection(firestore, "messages"),
+        where("chatId", "==", chatId)
+    ))
+
+    let messages = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data(), createdAt: doc.data().createdAt.toDate() }))
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        .slice(-count)
+
+
+    res.status(200).json(messages)
 }
