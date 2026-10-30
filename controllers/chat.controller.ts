@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import Chat from "../model/chat.model.ts";
 import ChatMember from "../model/chatMember.model.ts";
 
-import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, where, getDocs, updateDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
+
 import firestore from "../firebase.ts";
 
 
@@ -133,4 +134,25 @@ export const readMessage = async (req: Request, res: Response) => {
     await updateDoc(messageRef, { lastSeen: serverTimestamp() })
 
     res.status(200).json({ message: "Sucess" })
+}
+
+export let deleteMessage = async (req: Request, res: Response) => {
+    let { chatId, messageId } = req.params
+    let userId = Number(req.body?.userId) // obviously this will parser from cookie token
+
+    let messageRef = doc(firestore, "messages", messageId as string)
+    let message = await getDoc(messageRef)
+    if (!message.exists() || message.data().chatId !== chatId || message.data().isDelete) {
+        res.status(404).json({ message: "message not found" })
+        return
+    }
+
+    if (message.data().senderId !== userId) {
+        res.status(403).json({ message: "only the sender can delete this message" })
+        return
+    }
+
+    await updateDoc(messageRef, { isDelete: true })
+
+    res.status(200).json({ message: "message deleted" })
 }
