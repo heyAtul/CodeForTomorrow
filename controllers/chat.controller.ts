@@ -118,7 +118,7 @@ export const readMessage = async (req: Request, res: Response) => {
 
     // await updateDoc(message.ref, { lastSeen: serverTimestamp() })
 
-    let messageRef = doc(firestore, "messages", messageId)
+    let messageRef = doc(firestore, "messages", messageId as string)
     let message = await getDoc(messageRef)
     if (!message.exists() || message.data().senderId === userId) {
         res.status(404).json({ message: "message not found" })
